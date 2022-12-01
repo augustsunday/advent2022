@@ -9,6 +9,6 @@ class InputParser():
         self.input_filename = input_filename
 
     def parse_to_list(self):
-        file_obj = open(self.input_filename, "r")
-        file_data = file_obj.read()
-        return file_data.splitlines()
+        with open(self.input_filename, "r") as file_obj:
+            file_data = file_obj.read()
+            return file_data.splitlines()
