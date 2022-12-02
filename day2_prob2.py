@@ -10,10 +10,8 @@ def letter_to_score(letter: str) -> int:
 
 def match_score(choices) -> int:
     elf_choice, lose_draw_win = choices
-    my_choice = (elf_choice % 3 + ((lose_draw_win %3) + 1) % 3)
-    print(f"{elf_choice} {lose_draw_win} {my_choice}")
+    my_choice = (elf_choice + lose_draw_win) % 3 + 1
     score =(((my_choice % 3 - elf_choice % 3) + 4) % 3) * 3 + my_choice
-    print(f"Score: {score}")
     return score
 
 
@@ -22,6 +20,5 @@ def match_total(filename: str) -> list[tuple]:
         matches = [tuple([letter_to_score(play) for play in match.split()]) for match in file_obj.read().splitlines()]
 
     return sum(map(match_score, matches))
-
 
 print(match_total("input.txt"))
