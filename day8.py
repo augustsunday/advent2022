@@ -31,12 +31,19 @@ def get_scenic_factor(heights):
     """
     tree_stack = [0] #index of a tree in heights
     scenic = [0] * len(heights)
-    scenic[0] = 0
-    for idx, height in enumerate(heights[1:]):
-        if height <= heights[tree_stack[-1]]:
-            visible_trees.append(tree)
+    for i in range(len(heights)):
+        if not tree_stack:
+            scenic[i] = i
+            tree_stack.append(i)
+        elif heights[i] <= heights[tree_stack[-1]]:
+            scenic[i] = i - tree_stack[-1]
+            tree_stack.append(i)
+        else:
+            while tree_stack and heights[i] > heights[tree_stack[-1]]:
 
-    return visible_trees
+            tree_stack.append(i)
+
+
 
 def prob1(filename: str) -> int:
     visible = set()
@@ -69,4 +76,6 @@ def prob2(filename: str) -> int:
         trees.reverse()
 
 
-prob2("input.txt")
+# prob2("input.txt")
+test_list = [1, 2, 3, 4, 5]
+get_scenic_factor(test_list)
