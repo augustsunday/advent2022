@@ -23,6 +23,20 @@ def find_visible(forest, trees):
 
     return visible_trees
 
+def get_scenic_factor(heights):
+    """
+    Get scenic factor of one line of trees in one direction
+    :param trees: Heights of trees in line
+    :return: List of scenic factors, in order of trees. How many trees can a tree see to its left?
+    """
+    tree_stack = [0] #index of a tree in heights
+    scenic = [0] * len(heights)
+    scenic[0] = 0
+    for idx, height in enumerate(heights[1:]):
+        if height <= heights[tree_stack[-1]]:
+            visible_trees.append(tree)
+
+    return visible_trees
 
 def prob1(filename: str) -> int:
     visible = set()
@@ -44,31 +58,15 @@ def prob1(filename: str) -> int:
 
 
 def prob2(filename: str) -> int:
-    from_left, from_right, from_top, from_bottom = set(), set(), set(), set()
     forest = input_to_dict(filename)
     side_length = int(len(forest) ** 0.5)
-    print('Forest Side Length: ', side_length)
+    scenic_factor = [[1] * side_length for _ in range(side_length)]
     for i in range(side_length):
         trees = [(i, j) for j in range(side_length)]
-        from_left.update(find_visible(forest, trees))
         trees.reverse()
-        from_right.update(find_visible(forest, trees))
 
         trees = [(j, i) for j in range(side_length)]
-        from_top.update(find_visible(forest, trees))
         trees.reverse()
-        from_bottom.update(find_visible(forest, trees))
 
-    # Find all intersections, then add edges back in
-    visible_all = from_bottom & from_top & from_left & from_right
-    visible_all.update([(0, j) for j in range(side_length)])
-    visible_all.update([(j, 0) for j in range(side_length)])
 
-    print("Visible from left: ", from_left)
-    print("Visible from right: ", from_right)
-    print("Visible from top: ", from_top)
-    print("Visible from bottom: ", from_bottom)
-    print("Visible from all directions", visible_all)
-    print("Number of trees visible from all directions:", len(visible_all))
-
-prob1("input.txt")
+prob2("input.txt")
