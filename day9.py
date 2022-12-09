@@ -64,5 +64,5 @@ def prob2(filename: str) -> int:
     print("Positions visited: ", len(visited))
 
 
-# prob1("input.txt")
+prob1("input.txt")
 prob2("input.txt")
