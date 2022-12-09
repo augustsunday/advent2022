@@ -55,7 +55,6 @@ def prob1(filename: str) -> int:
     visible = set()
     forest = input_to_dict(filename)
     side_length = int(len(forest) ** 0.5)
-    print('Forest Side Length: ', side_length)
     for i in range(side_length):
         trees = [(i, j) for j in range(side_length)]
         visible.update(find_visible(forest, trees))
