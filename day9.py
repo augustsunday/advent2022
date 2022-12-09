@@ -18,6 +18,7 @@ def move_tail(head_pos, tail_pos):
 
     return tail_pos
 
+
 def move_head(head_pos, heading):
     """
     Move head based on current position and heading
@@ -25,11 +26,12 @@ def move_head(head_pos, heading):
     :param heading: Up/Down/Left/Right
     :return: New position
     """
-    deltas = {"U":(1, 0), "D": (-1,0), "L": (0, -1), "R": (0, 1)}
+    deltas = {"U": (1, 0), "D": (-1, 0), "L": (0, -1), "R": (0, 1)}
     row, col = head_pos
     delta_r, delta_c = deltas[heading]
     row, col = row + delta_r, col + delta_c
     return row, col
+
 
 def prob1(filename: str) -> int:
     visited = set()
@@ -37,7 +39,6 @@ def prob1(filename: str) -> int:
 
     with open(filename, "r") as fo:
         for heading, steps in [line.split() for line in fo.read().split("\n")]:
-            print(heading, steps)
             for _ in range(int(steps)):
                 visited.add(tail_pos)
                 head_pos = move_head(head_pos, heading)
@@ -46,4 +47,22 @@ def prob1(filename: str) -> int:
 
     print("Positions visited: ", len(visited))
 
-prob1("input.txt")
+
+def prob2(filename: str) -> int:
+    visited = set()
+    knots = [(0, 0)] * 10
+
+    with open(filename, "r") as fo:
+        for heading, steps in [line.split() for line in fo.read().split("\n")]:
+            for _ in range(int(steps)):
+                visited.add(knots[-1])
+                knots[0] = move_head(knots[0], heading)
+                for i in range(1, 10):
+                    knots[i] = move_tail(knots[i-1], knots[i])
+        visited.add(knots[-1])
+
+    print("Positions visited: ", len(visited))
+
+
+# prob1("input.txt")
+prob2("input.txt")
