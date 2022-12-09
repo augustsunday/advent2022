@@ -23,26 +23,32 @@ def find_visible(forest, trees):
 
     return visible_trees
 
-def get_scenic_factor(heights):
+
+def get_scenic_factor(coords, forest):
     """
     Get scenic factor of one line of trees in one direction
     :param trees: Heights of trees in line
-    :return: List of scenic factors, in order of trees. How many trees can a tree see to its left?
+    :return: List of scenic factors, in order of trees. How many trees can a tree see to its left in the sequence?
     """
-    tree_stack = [0] #index of a tree in heights
+    heights = [forest[coord] for coord in list(coords)]
+    tree_stack = [0]  # index of a tree in heights
     scenic = [0] * len(heights)
     for i in range(len(heights)):
+        while tree_stack and heights[i] > heights[tree_stack[-1]]:
+            tree_stack.pop()
         if not tree_stack:
             scenic[i] = i
             tree_stack.append(i)
-        elif heights[i] <= heights[tree_stack[-1]]:
+        else:
             scenic[i] = i - tree_stack[-1]
             tree_stack.append(i)
-        else:
-            while tree_stack and heights[i] > heights[tree_stack[-1]]:
 
-            tree_stack.append(i)
+    return scenic
 
+
+def update_scenic_factor(coords, scenics, all_scenics):
+    for coord, scenic in zip(coords, scenics):
+        all_scenics[coord] *= scenic
 
 
 def prob1(filename: str) -> int:
@@ -65,17 +71,34 @@ def prob1(filename: str) -> int:
 
 
 def prob2(filename: str) -> int:
+    from collections import defaultdict
     forest = input_to_dict(filename)
     side_length = int(len(forest) ** 0.5)
-    scenic_factor = [[1] * side_length for _ in range(side_length)]
+    scenic_factor = defaultdict(lambda:1)
+
     for i in range(side_length):
+        # Row, Looking left
         trees = [(i, j) for j in range(side_length)]
-        trees.reverse()
+        row = get_scenic_factor(trees, forest)
+        update_scenic_factor(trees, row, scenic_factor)
 
+        # Row, looking right
+        row = get_scenic_factor(reversed(trees), forest)
+        row.reverse()
+        update_scenic_factor(trees, row, scenic_factor)
+
+        # Column, Looking down
         trees = [(j, i) for j in range(side_length)]
-        trees.reverse()
+        row = get_scenic_factor(trees, forest)
+        update_scenic_factor(trees, row, scenic_factor)
+
+        # Column, looking up
+        row = get_scenic_factor(reversed(trees), forest)
+        row.reverse()
+        update_scenic_factor(trees, row, scenic_factor)
+
+    print("Highest Scenic Factor: ", max(scenic_factor.values()))
 
 
-# prob2("input.txt")
-test_list = [1, 2, 3, 4, 5]
-get_scenic_factor(test_list)
+prob1("input.txt")
+prob2("input.txt")
