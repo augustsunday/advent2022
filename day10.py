@@ -2,8 +2,6 @@
 def get_adders(filename: str) -> list[int]:
     """
     Returns an array of the amount to add to signal strength at the _start_ of the cycle
-    :param filename:
-    :return:
     """
     with open(filename, "r") as fo:
         adders = [0]
@@ -16,6 +14,7 @@ def get_adders(filename: str) -> list[int]:
 
 
 def get_registers(adders):
+    # Return register at every clock cycle
     register = 1
     registers = []
     for idx, adder in enumerate(adders):
@@ -26,6 +25,7 @@ def get_registers(adders):
 
 
 def get_signal_strengths(registers):
+    # Return signal strength at every clock cycle
     strengths = []
     for cycle, register in enumerate(registers):
         strengths.append((cycle + 1) * register)
@@ -33,8 +33,7 @@ def get_signal_strengths(registers):
 
 
 def filter_signal_strengths(strengths):
-    # Take list of signal strengths and only return target strengths
-    from itertools import count
+    # Return every 40th signal strength, starting w/ 20
     filtered = []
     target = 20
     while target < len(strengths):
@@ -45,6 +44,9 @@ def filter_signal_strengths(strengths):
 
 
 def render(registers):
+    """
+    Render image from registers
+    """
     row = []
     for idx, register in enumerate(registers):
         if idx % 40 == 0:
@@ -57,10 +59,7 @@ def render(registers):
 
 def prob1(filename: str) -> int:
     """
-    Find the signal strength during the 20th, 60th, 100th, 140th, 180th, and 220th cycles.
-    What is the sum of these six signal strengths?
-    :param filename: input file
-    :return: Sum of signal strengths at target cycles
+    Find the signal strength every 40 cycles starting w/ cycle 20
     """
     print("Prob 1:")
     print(sum(filter_signal_strengths(get_signal_strengths(get_registers(get_adders(filename))))))
