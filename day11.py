@@ -89,10 +89,11 @@ class Solution():
         self.round += 1
 
     def get_final_counts(self):
-        return list(reversed(sorted([monkey.inspected_count for monkey in self.monkeys])))
+        return [monkey.inspected_count for monkey in self.monkeys]
 
     def get_monkey_business(self):
-        return self.get_final_counts()[0] * self.get_final_counts()[1]
+        counts = list(reversed(sorted(self.get_final_counts())))
+        return counts[0] * counts[1]
 
 
 def prob1(filename, rounds):
@@ -103,4 +104,4 @@ def prob1(filename, rounds):
     print("Monkey Business: ", scenario.get_monkey_business())
 
 
-prob1("input.txt", 20)
+prob1("test_input.txt", 20)
