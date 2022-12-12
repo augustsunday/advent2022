@@ -33,7 +33,6 @@ class Monkey():
         print()
 
     def catch_item(self, item: int):
-        print("Monkey caught an item of worry level", item)
         self.items.append(item)
 
     def store_neighbors(self, neighbors):
@@ -42,13 +41,10 @@ class Monkey():
     def inspect_next(self):
         self.inspected_count += 1
         curr_item = self.items.popleft()
-        print("Monkey inspects and item with a worry level of :", curr_item)
         curr_item = self.operation(curr_item)
-        print("Worry level changed to: ", curr_item)
         # Perform reduction
         curr_item = curr_item % (2 * 7 * 13 * 3 * 19 * 5 * 11 * 17)
         recipient = self.true_recipient if curr_item % self.test_divisor == 0 else self.false_recipient
-        print(f"Monkey throws item with worry level {curr_item} to Monkey {recipient}")
         self.neighbors[recipient].catch_item(curr_item)
 
     def take_turn(self):
