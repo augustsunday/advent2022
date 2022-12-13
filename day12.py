@@ -1,5 +1,4 @@
 # Advent of Code 2022 - Day 12
-import numpy as np
 def create_grid(filename: str):
     # Create grid from AoC input
     # return grid and tuples for start/end points
@@ -103,14 +102,6 @@ def prob1(filename):
 
 
 def prob2(filename):
-    best_path = float("inf")
-    board, start, end = create_grid(filename)
-
-    path, directions = solve_puzzle(board, start, end)
-    print("Board: ", board)
-    print(f"Start: {start}     End: {end}")
-    print("Path: ", path)
-    print("Steps: ", len(path) - 1)
-    print("Directions: ", directions)
+    # Notes: find dist from end to each a, but keep the distance map from search to search?
 
 prob1("input.txt")
