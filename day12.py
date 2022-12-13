@@ -52,7 +52,7 @@ def solve_puzzle(Board, Source, Destination):
         return -1 < r < len(Board) and -1 < c < len(Board[0])
 
     def is_reachable(row, col, r, c):
-        return Board[r][c] - Board[row][col] < 2
+        return Board[r][c] - Board[row][col] > -2
 
     while pq:
         distance, row, col = heappop(pq)
@@ -83,17 +83,15 @@ def solve_puzzle(Board, Source, Destination):
         pr1, pc1 = path[i]
         pr2, pc2 = path[i + 1]
         current_direction = (pr2 - pr1, pc2 - pc1)
-        # print(current_direction)
-        # print(shift_to_direction[current_direction])
         directions.append(shift_to_direction[current_direction])
     direction_string = "".join(directions)
 
-    return path, direction_string
+    return path, direction_string, dist
 
 
 def prob1(filename):
     board, start, end = create_grid(filename)
-    path, directions = solve_puzzle(board, start, end)
+    path, directions, distances = solve_puzzle(board, start, end)
     print("Board: ", board)
     print(f"Start: {start}     End: {end}")
     print("Path: ", path)
@@ -102,6 +100,24 @@ def prob1(filename):
 
 
 def prob2(filename):
-    # Notes: find dist from end to each a, but keep the distance map from search to search?
+    # Flip starting and ending points, and change criteria for accessibility
+    # This Dijkstra calculates distance from starting point to _all_ accessible cells
+    # It does not terminate when it reaches goal
+    board, end, start = create_grid(filename)
 
-prob1("input.txt")
+    path, directions, distances = solve_puzzle(board, start, end)
+    print("Board: ", board)
+    print(f"Start: {start}     End: {end}")
+    print("Path: ", path)
+    print("Steps: ", len(path) - 1)
+    print("Directions: ", directions)
+
+    # Find the shortest distance to an elevation 0 square
+    shortest_path = float("inf")
+    for i in range(len(distances)):
+        for j in range(len(distances[0])):
+            if board[i][j] == 0:
+                shortest_path = min(shortest_path, distances[i][j])
+    print("Shortest path: ", shortest_path)
+
+prob2("input.txt")
