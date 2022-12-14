@@ -9,7 +9,6 @@ from itertools import pairwise
 class Solution:
     def __init__(self, filename):
         self.create_grid(filename)
-        self.drop_point = []
         self.render_grid()
 
     def create_grid(self, filename):
@@ -33,7 +32,7 @@ class Solution:
             # Create empty grid
             self.max_col += 1
             self.max_row += 1
-            self.grid = [['.' for i in range(self.max_col)] for j in range(self.max_row)]
+            self.grid = [['.' for i in range(self.max_col + 10000)] for j in range(self.max_row + 10000)]
 
             # Draw Lines
             for stroke in strokes:
@@ -57,8 +56,45 @@ class Solution:
         self.grid[row][col] = "#"
 
     def render_grid(self):
-        for row in self.grid[self.min_row::]:
-            print("".join(row[self.min_col::]))
+        for row in self.grid[self.min_row:self.max_row]:
+            print("".join(row[self.min_col:self.max_col]))
+
+    def drop_sand(self):
+        stack = [[0, 500]]
+        grains = 0
+        while stack:
+            row, col = stack[-1]
+
+            # Falling into the void?
+            if row < self.min_row or row > self.max_row or col < self.min_col or col > self.max_col:
+                self.render_grid()
+                print("Sand is falling into the void!")
+                print(f"Total Grains: {grains}")
+                return grains
+
+            # Next path
+            if self.grid[row + 1][col] == ".":
+                stack.append([row+1, col])
+            elif self.grid[row + 1][col - 1] == ".":
+                stack.append([row + 1, col - 1])
+            elif self.grid[row + 1][col + 1] == ".":
+                stack.append([row + 1, col + 1])
+            else:
+                self.grid[row][col] = "o"
+                grains += 1
+                stack.pop()
+
+        print("The sand has plugged up the hole!")
+        print(f"Total Grains: {grains}")
+
+    def prob1(self):
+        self.drop_sand()
+
+    def prob2(self):
+        self.draw_line([0, self.max_row + 1], [self.max_col , self.max_row + 1])
+        self.render_grid()
 
 
-problem = Solution("test_input.txt")
+problem = Solution("input.txt")
+problem.prob2()
+
