@@ -33,6 +33,7 @@ class Solution:
             # Create empty grid
             self.grid = defaultdict(lambda: ".")
 
+
             # Draw Lines
             for stroke in strokes:
                 for start, end in pairwise(stroke):
@@ -63,18 +64,27 @@ class Solution:
     def drop_sand(self, has_floor = False):
         stack = [[0, 500]]
         grains = 0
+
+        if has_floor:
+            self.floor = self.max_row + 2
+            self.max_row += 3
+
         while stack:
             row, col = stack[-1]
 
             # Falling into the void?
-            if not has_floor and (row < self.min_row or row > self.max_row):
+            if row > self.max_row:
                 self.render_grid()
                 print("Sand is falling into the void!")
                 print(f"Total Grains: {grains}")
                 return grains
 
             # Next path
-            if self.grid[(row + 1, col)]== ".":
+            if has_floor and row + 1 == self.floor:
+                self.grid[(row,col)] = "o"
+                grains += 1
+                stack.pop()
+            elif self.grid[(row + 1, col)]== ".":
                 stack.append([row+1, col])
             elif self.grid[(row + 1, col - 1)] == ".":
                 stack.append([row + 1, col - 1])
@@ -92,9 +102,13 @@ class Solution:
         self.drop_sand()
 
     def prob2(self):
+        self.drop_sand(has_floor=True)
         self.render_grid()
 
 
 problem = Solution("input.txt")
 problem.prob1()
+
+problem = Solution("input.txt")
+problem.prob2()
 
