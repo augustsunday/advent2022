@@ -4,6 +4,7 @@
 # Description:
 import re
 from itertools import pairwise
+from collections import defaultdict
 
 
 class Solution:
@@ -30,9 +31,7 @@ class Solution:
                     self.min_col = min(self.min_col, col)
 
             # Create empty grid
-            self.max_col += 1
-            self.max_row += 1
-            self.grid = [['.' for i in range(self.max_col + 10000)] for j in range(self.max_row + 10000)]
+            self.grid = defaultdict(lambda: ".")
 
             # Draw Lines
             for stroke in strokes:
@@ -50,37 +49,39 @@ class Solution:
         r_delta = min(1, r_delta)
         while start != end:
             col, row = start
-            self.grid[row][col] = "#"
+            self.grid[(row,col)] = "#"
             col, row = col + c_delta, row + r_delta
             start = [col, row]
-        self.grid[row][col] = "#"
+        self.grid[(row,col)] = "#"
 
     def render_grid(self):
-        for row in self.grid[self.min_row:self.max_row]:
-            print("".join(row[self.min_col:self.max_col]))
+        for row in range(self.min_row,self.max_row):
+            for col in range(self.min_col, self.max_col):
+                print(self.grid[(row, col)], end="")
+            print("\n")
 
-    def drop_sand(self):
+    def drop_sand(self, has_floor = False):
         stack = [[0, 500]]
         grains = 0
         while stack:
             row, col = stack[-1]
 
             # Falling into the void?
-            if row < self.min_row or row > self.max_row or col < self.min_col or col > self.max_col:
+            if not has_floor and (row < self.min_row or row > self.max_row):
                 self.render_grid()
                 print("Sand is falling into the void!")
                 print(f"Total Grains: {grains}")
                 return grains
 
             # Next path
-            if self.grid[row + 1][col] == ".":
+            if self.grid[(row + 1, col)]== ".":
                 stack.append([row+1, col])
-            elif self.grid[row + 1][col - 1] == ".":
+            elif self.grid[(row + 1, col - 1)] == ".":
                 stack.append([row + 1, col - 1])
-            elif self.grid[row + 1][col + 1] == ".":
+            elif self.grid[(row + 1, col + 1)] == ".":
                 stack.append([row + 1, col + 1])
             else:
-                self.grid[row][col] = "o"
+                self.grid[(row,col)] = "o"
                 grains += 1
                 stack.pop()
 
@@ -91,10 +92,9 @@ class Solution:
         self.drop_sand()
 
     def prob2(self):
-        self.draw_line([0, self.max_row + 1], [self.max_col , self.max_row + 1])
         self.render_grid()
 
 
 problem = Solution("input.txt")
-problem.prob2()
+problem.prob1()
 
