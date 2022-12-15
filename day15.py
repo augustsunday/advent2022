@@ -83,6 +83,3 @@ def prob2(filename):
                 print("Tuning Frequency: ", x*4_000_000 +  y)
 
 
-
-prob1("input.txt", 2000000)
-prob2("input.txt")
