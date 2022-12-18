@@ -2,6 +2,20 @@
 # Advent of Code 2022 - Day 17
 # Pyroclastic flow
 # Bit manipulation and cycle detection
+class Turn:
+    def __init__(self, turn_number: int, instruction_num: int, block_type: int, board: int, next):
+        self.turn_number = turn_number
+        self.instruction_num = instruction_num
+        self.block_type = block_type
+        self.board = board
+        self.next = next
+
+    def __eq__(self, other):
+        return self.instruction_num == other.instruction_num and self.block_type == other.block_type and self.board == other.board
+
+    def __repr__(self):
+        return f"Turn: {self.turn_number}\nInstruction: {self.instruction_num}\nBlock Type: {self.block_type}\nBoard:\n{Volcano.render(None,self.board)}"
+
 
 class Volcano:
     def __init__(self):
@@ -13,7 +27,9 @@ class Volcano:
         self.FULL_STAGING = 2 ** 28 - 1
         self.STARTING_SIGNATURE = 2 ** 7 - 1
         self.BLOCK_ORDER = [self.HORIZONTAL_4, self.PLUS_SIGN, self.ELL, self.VERTICAL_4, self.BLOCK_4]
-
+        self.ROW_MOD = 2 ** 7 - 1
+        self.BLOCK_LEFT = [15, 11, 15, 4, 6]
+        self.BLOCK_RIGHT = [120, 49, 113, 2, 65]
 
     def test_pattern(self):
         print("Horizontal 4:")
@@ -36,50 +52,82 @@ class Volcano:
         :return: None - Renders graphical representation of bitmap to screen
         """
         s = format(s, 'b').strip("-")
-        print(s)
         s = s[::-1]
-        print(s)
+        print("|+++++++|")
         for i in range(0, len(s), 7):
             print("|" + s[i:i + 7].ljust(7, "0").replace("0", ".").replace("1", "#") + "|")
+        print("\n")
 
-    def setup_board(self, signature: int, block: int) -> int:
+    def setup_board(self, profile) -> int:
         """
         Sets up board for a new round.
         All params are binary integer representations of board elements
-        :param signature: Signature to populate the signature area [int]
+        :param profile: Profile to populate the signature area [int]
         :param block: Block to stage in staging area
         :return: Binary representation of full board. Block in block area, 3 empty lines, then the signature
         """
-        return signature + (block << 49)
+        return (profile << 49) + (test.STARTING_SIGNATURE << 56)
 
-    def move_block(self, block: int, direction: str, board: int, signature:int = 0) -> [int, bool] :
+    def move_block(self, block_type: int, block_bits: int, direction: str, board: int) -> [int, bool]:
         """
         Gas jets push the block left or right, unless it will run into a wall. Then the block tries to drop.
         If the block can't drop, it comes to rest.
-        If a signature is provided it will update that as well. Signatures contain all possible destinations for a block to fit into.
-        :param block:
+        :param block_type: Type of block
+        :param block_bits: Code for actual block (bitshifted from original)
         :param direction:
-        :return: Binary representation of new block, boolean if block has come to rest
+        :return: (new block [int], status of block - True: Still falling, False - resting)
         """
-        pass
+        if direction == ">" and ((block_bits) % self.ROW_MOD) != self.BLOCK_RIGHT[block_type]:
+            block_bits <<= 1
 
+        if direction == "<" and ((block_bits) % self.ROW_MOD) != self.BLOCK_LEFT[block_type]:
+            block_bits >>= 1
 
+        if (block_bits << 7) & board == 0:
+            block_bits <<= 7
+            return block_bits, True
 
-
+        return block_bits, False
 
 
 test = Volcano()
-# test.render((test.BLOCK - test.FULL_STAGING))
-# test.render((test.ELL - test.FULL_STAGING))
-# test.render(test.board)
-# test.render(test.STARTING_SIGNATURE)
-# test.render(test.setup_board(test.STARTING_SIGNATURE, test.HORIZONTAL_4))
 
-vert = test.VERTICAL_4 << 5
-for i in range(10):
-    print(i)
-    print(vert >> i)
-    print((vert >> i) % (2**7 -1))
-    test.render(vert >> i)
+# Drop test code
+# for blocknum in range(5):
+#     for direction in "<>":
+#         my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
+#
+#         test.render(my_board)
+#
+#         falling = True
+#         my_block = test.BLOCK_ORDER[blocknum]
+#         while falling:
+#             print("Pre-push block mod: ", my_block % test.ROW_MOD)
+#             test.render(my_block + my_board)
+#             my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
+#         test.render(my_block + my_board)
 
-test.render(test.setup_board(test.VERTICAL_4, test.STARTING_SIGNATURE))
+for blocknum in range(5):
+    my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
+    for direction in "<>":
+
+        test.render(my_board)
+
+        falling = True
+        my_block = test.BLOCK_ORDER[blocknum]
+        while falling:
+            print("Pre-push block mod: ", my_block % test.ROW_MOD)
+            test.render(my_block + my_board)
+            my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
+        my_board = my_board + my_block
+        test.render(my_board)
+        print('Board height: ', my_board.bit_length() / 7)
+
+# ====Test Code====
+
+my_turn = Turn(27, 36, 3, test.STARTING_SIGNATURE, None)
+other_turn = Turn(300, 36, 3, test.STARTING_SIGNATURE, None)
+assert my_turn == other_turn
+"Print: turn equality works"
+print(my_turn)
+"Print: Turn printing works"
