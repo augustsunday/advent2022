@@ -52,10 +52,11 @@ class Volcano:
         """
         return signature + (block << 49)
 
-    def move_block(self, block: int, direction: str) -> [int, bool] :
+    def move_block(self, block: int, direction: str, board: int, signature:int = 0) -> [int, bool] :
         """
         Gas jets push the block left or right, unless it will run into a wall. Then the block tries to drop.
         If the block can't drop, it comes to rest.
+        If a signature is provided it will update that as well. Signatures contain all possible destinations for a block to fit into.
         :param block:
         :param direction:
         :return: Binary representation of new block, boolean if block has come to rest
