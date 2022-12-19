@@ -119,27 +119,30 @@ class Volcano:
         """
         shadow = 0
         stack = []
+        seen = set()
         for block_type in range(5):
             block_bits = self.BLOCK_ORDER[block_type]
             stack.append((block_bits, ">"))
             stack.append((block_bits, "<"))
             while stack:
                 block_bits, direction = stack.pop()
-                if direction == ">" and ((block_bits % self.ROW_MOD) != self.BLOCK_RIGHT[block_type]) and (
-                        (block_bits << 1) & board == 0):
-                    block_bits <<= 1
-                    shadow |= block_bits
+                if (block_bits, direction) not in seen:
+                    seen.add((block_bits, direction))
+                    if direction == ">" and ((block_bits % self.ROW_MOD) != self.BLOCK_RIGHT[block_type]) and (
+                            (block_bits << 1) & board == 0):
+                        block_bits <<= 1
+                        shadow |= block_bits
 
-                if direction == "<" and ((block_bits % self.ROW_MOD) != self.BLOCK_LEFT[block_type]) and (
-                        (block_bits >> 1) & board == 0):
-                    block_bits >>= 1
-                    shadow |= block_bits
+                    if direction == "<" and ((block_bits % self.ROW_MOD) != self.BLOCK_LEFT[block_type]) and (
+                            (block_bits >> 1) & board == 0):
+                        block_bits >>= 1
+                        shadow |= block_bits
 
-                if (block_bits << 7) & board == 0:
-                    block_bits <<= 7
-                    shadow |= block_bits
-                    stack.append((block_bits, ">"))
-                    stack.append((block_bits, "<"))
+                    if (block_bits << 7) & board == 0:
+                        block_bits <<= 7
+                        shadow |= block_bits
+                        stack.append((block_bits, ">"))
+                        stack.append((block_bits, "<"))
 
         # Chop off top two rows which have artifacts d/t starting positions of shapes
         shadow = shadow >> 14
@@ -200,4 +203,5 @@ for i in range(2022):
     height += height_adder
     # test.render(my_board)
 test.render(my_board)
+print(height)
 assert height == 3068
