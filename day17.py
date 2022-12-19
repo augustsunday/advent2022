@@ -193,15 +193,37 @@ class Volcano:
         return board, height_adder
 
 
-test = Volcano("test_input.txt")
-my_board = (test.STARTING_SIGNATURE << 56) + (test.STARTING_SIGNATURE << 49)
-height = 0
+tortoise = Volcano("test_input.txt")
+tortoise_board = (tortoise.STARTING_SIGNATURE << 56) + (tortoise.STARTING_SIGNATURE << 49)
+tortoise_height = 0
+
+hare = Volcano("test_input.txt")
+hare_board = (hare.STARTING_SIGNATURE << 56) + (hare.STARTING_SIGNATURE << 49)
+hare_height = 0
+hare_board, adder = hare.take_turn(hare_board)
+hare_height += adder
+
+turn = 0
+
+
 for i in range(2022):
-    print(i)
-    my_board, height_adder = test.take_turn(my_board)
-    # test.render(my_board)
-    height += height_adder
-    # test.render(my_board)
-test.render(my_board)
-print(height)
-assert height == 3068
+    if tortoise_board == hare_board:
+        print("Board match at turn:", turn)
+        print("Tortoise Height", tortoise_height)
+        print("Height Differential", hare_height - tortoise_height)
+        break
+    tortoise_board, height_adder = tortoise.take_turn(tortoise_board)
+    tortoise_height += height_adder
+
+    hare_board, adder = hare.take_turn(hare_board)
+    hare_height += adder
+    hare_board, adder = hare.take_turn(hare_board)
+    hare_height += adder
+
+
+    turn += 1
+
+answer = (((1000000000000 - 34) / 35) * 53) + 60
+print(answer)
+tortoise.render(tortoise_board)
+# assert tortoise_height == 3068
