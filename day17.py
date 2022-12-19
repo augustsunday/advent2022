@@ -193,11 +193,11 @@ class Volcano:
         return board, height_adder
 
 
-tortoise = Volcano("test_input.txt")
+tortoise = Volcano("input.txt")
 tortoise_board = (tortoise.STARTING_SIGNATURE << 56) + (tortoise.STARTING_SIGNATURE << 49)
 tortoise_height = 0
 
-hare = Volcano("test_input.txt")
+hare = Volcano("input.txt")
 hare_board = (hare.STARTING_SIGNATURE << 56) + (hare.STARTING_SIGNATURE << 49)
 hare_height = 0
 hare_board, adder = hare.take_turn(hare_board)
@@ -206,12 +206,13 @@ hare_height += adder
 turn = 0
 
 
-for i in range(1000000):
+for i in range(3420):
     if tortoise_board == hare_board:
         print("Board match at turn:", turn)
         print("Tortoise Height", tortoise_height)
         print("Height Differential", hare_height - tortoise_height)
         print("Turn Differential", i)
+        print()
     tortoise_board, height_adder = tortoise.take_turn(tortoise_board)
     tortoise_height += height_adder
 
@@ -222,4 +223,8 @@ for i in range(1000000):
 
 
     turn += 1
+
+
+turn = 3419
+
 
