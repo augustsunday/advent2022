@@ -225,6 +225,19 @@ for i in range(3420):
     turn += 1
 
 
-turn = 3419
+print(turn)
+turns_to_go = 1000000000000 - turn
+print(turns_to_go, "Turns to go")
+intervals_to_go = turns_to_go//1710
+print(intervals_to_go, "intervals to go")
+tortoise_height +=  2572 * intervals_to_go
+print(f"Height after {intervals_to_go} more cycles: {hare_height}")
+remainder = turns_to_go%1710
+print(f"{remainder} more turns to go after that...")
 
+for i in range(remainder):
+    tortoise_board, height_adder = tortoise.take_turn(tortoise_board)
+    tortoise_height += height_adder
+
+print(f"Final height: {tortoise_height}")
 
