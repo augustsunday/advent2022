@@ -142,26 +142,23 @@ class Volcano:
                     stack.append((block_bits, "<"))
 
         # Chop off top two rows which have artifacts d/t starting positions of shapes
-        self.render(shadow)
         shadow = shadow >> 14
-        self.render(shadow)
 
         # Convert to board format
         length = shadow.bit_length()
         length = length if length % 7 == 0 else length + 7 - length % 7
         mask = 2 ** length - 1
         shadow = shadow ^ mask
-        self.render(shadow)
         while shadow & self.ROW_MOD == 0:
             shadow >>= 7
 
-        self.render(shadow)
         floor_row = ceil(shadow.bit_length() / 7)
         shadow += self.STARTING_SIGNATURE << (7 * floor_row)
 
         # Push down to make space for staging area and drop region
         shadow = shadow << 49
-        self.render(shadow)
+
+        return shadow
 
     def take_turn(self, board: int):
         """
@@ -188,7 +185,7 @@ class Volcano:
         board <<= 49
 
         # reduce board to its simplest form
-        # board = self.simplify_board(board)
+        board = self.simplify_board(board)
 
         return board, height_adder
 
@@ -196,11 +193,11 @@ class Volcano:
 test = Volcano("test_input.txt")
 my_board = (test.STARTING_SIGNATURE << 56) + (test.STARTING_SIGNATURE << 49)
 height = 0
-for i in range(11):
+for i in range(2022):
     print(i)
     my_board, height_adder = test.take_turn(my_board)
     # test.render(my_board)
     height += height_adder
     # test.render(my_board)
-    simple = test.simplify_board(my_board)
-# assert height == 3068
+test.render(my_board)
+assert height == 3068
