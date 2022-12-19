@@ -190,59 +190,12 @@ class Volcano:
 
 
 test = Volcano("test_input.txt")
-
-# Drop test code
-# for blocknum in range(5):
-#     for direction in "<>":
-#         my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
-#
-#         test.render(my_board)
-#
-#         falling = True
-#         my_block = test.BLOCK_ORDER[blocknum]
-#         while falling:
-#             print("Pre-push block mod: ", my_block % test.ROW_MOD)
-#             test.render(my_block + my_board)
-#             my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
-#         test.render(my_block + my_board)
-
-# for blocknum in range(5):
-#     my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
-#     for direction in "<>":
-#
-#         test.render(my_board)
-#
-#         falling = True
-#         my_block = test.BLOCK_ORDER[blocknum]
-#         while falling:
-#             print("Pre-push block mod: ", my_block % test.ROW_MOD)
-#             test.render(my_block + my_board)
-#             my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
-#         my_board = my_board + my_block
-#         test.render(my_board)
-#         print('Board height: ', my_board.bit_length() / 7)
-#
-# # ====Test Code====
-#
-# my_turn = Turn(27, 36, 3, test.STARTING_SIGNATURE, None)
-# other_turn = Turn(300, 36, 3, test.STARTING_SIGNATURE, None)
-# assert my_turn == other_turn
-# # print(my_turn)
-# i = 0
-# blocknum = instruction = 0
-# while i < 10 or blocknum != 0 or instruction != 0:
-#         instruction = next(test.INSTRUCTION_ITER)
-#         blocknum = next(test.BLOCK_ITER)
-#         if i % 10090 == 0:
-#             print(f"i: {i}, instruction {instruction}, block_number {blocknum}")
-#         i += 1
-
 my_board = (test.STARTING_SIGNATURE << 56) + (test.STARTING_SIGNATURE << 49)
 height = 0
-for i in range(5):
+for i in range(2022):
     my_board, height_adder = test.take_turn(my_board)
     # test.render(my_board)
     height += height_adder
-    test.render(my_board)
-    simple = test.simplify_board(my_board)
-print(height)
+    # test.render(my_board)
+    # simple = test.simplify_board(my_board)
+assert height == 3068
