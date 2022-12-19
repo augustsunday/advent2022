@@ -34,11 +34,11 @@ class Droplet:
         longest_dimension = max(self.max_x, self.max_y, self.max_z)
         seen = set()
         queue = deque()
-        for i in range(longest_dimension + 2):
-            for j in range(longest_dimension + 2):
-                for x, y, z in itertools.permutations([0, i, j]):
-                            queue.append((x, y, z))
-                            seen.add((x, y, z))
+        # SHould be x, y, 0 and x, y, longest in different permutations
+        for i in range(longest_dimension + 1):
+            for j in range(longest_dimension + 1):
+                    queue.append((i, j, 0))
+                    seen.add((i, j, 0))
         surface_area = 0
         while queue:
             coord = queue.popleft()
@@ -55,7 +55,7 @@ class Droplet:
         return surface_area
 
 
-drop = Droplet("input.txt")
+drop = Droplet("test_input.txt")
 print(drop.get_surface_area())
 
 
