@@ -2,23 +2,26 @@
 # Advent of Code 2022 - Day 17
 # Pyroclastic flow
 # Bit manipulation and cycle detection
+from itertools import cycle
 class Turn:
-    def __init__(self, turn_number: int, instruction_num: int, block_type: int, board: int, next):
+    def __init__(self, turn_number: int, instruction_num: int, block_type: int, board: int, height:int, next):
         self.turn_number = turn_number
         self.instruction_num = instruction_num
         self.block_type = block_type
         self.board = board
+        self.height = height
         self.next = next
 
     def __eq__(self, other):
         return self.instruction_num == other.instruction_num and self.block_type == other.block_type and self.board == other.board
 
     def __repr__(self):
-        return f"Turn: {self.turn_number}\nInstruction: {self.instruction_num}\nBlock Type: {self.block_type}\nBoard:\n{Volcano.render(None,self.board)}"
+        return f"Turn: {self.turn_number}\nInstruction: {self.instruction_num}\nBlock Type: {self.block_type}\nBoard" \
+               f":\nCurrent Height:{self.height}{Volcano.render(None,self.board)} "
 
 
 class Volcano:
-    def __init__(self):
+    def __init__(self, filename: str):
         self.HORIZONTAL_4 = 125829120
         self.PLUS_SIGN = 17236992
         self.ELL = 58984448
@@ -30,6 +33,13 @@ class Volcano:
         self.ROW_MOD = 2 ** 7 - 1
         self.BLOCK_LEFT = [15, 11, 15, 4, 6]
         self.BLOCK_RIGHT = [120, 49, 113, 2, 65]
+
+        with open(filename, "r") as fo:
+            self.INSTRUCTION_SEQ = fo.read().strip("\n")
+
+        self.INSTRUCTION_ITER = cycle(range(len(self.INSTRUCTION_SEQ)))
+        self.BLOCK_ITER = cycle(range(len(self.BLOCK_ORDER)))
+
 
     def test_pattern(self):
         print("Horizontal 4:")
@@ -89,8 +99,38 @@ class Volcano:
 
         return block_bits, False
 
+    def take_turn(self, board: int):
+        """
+        Takes a board and drops a block until it lands (according to current state of class instruction and block status)
+        Returns turn object containing new board, height gained
+        :param board:
+        :return:
+        """
+        current_block_num = next(self.BLOCK_ITER)
+        current_block = self.BLOCK_ORDER[current_block_num]
+        falling = True
+        while falling:
+            self.render(board + current_block)
+            current_instruction = self.INSTRUCTION_SEQ[next(self.INSTRUCTION_ITER)]
+            current_block, falling = self.move_block(current_block_num, current_block, current_instruction, board)
+        board = board + current_block
 
-test = Volcano()
+        # Get height_adder
+        height_adder = 7
+        while board & self.ROW_MOD == 0:
+            board >>= 7
+            height_adder -= 1
+            self.render(board)
+
+        # Push board back to make room for next block to fall
+        board <<= 49
+
+
+        return board
+
+
+
+test = Volcano("input.txt")
 
 # Drop test code
 # for blocknum in range(5):
@@ -107,27 +147,38 @@ test = Volcano()
 #             my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
 #         test.render(my_block + my_board)
 
-for blocknum in range(5):
-    my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
-    for direction in "<>":
+# for blocknum in range(5):
+#     my_board = test.setup_board(test.STARTING_SIGNATURE) << 49
+#     for direction in "<>":
+#
+#         test.render(my_board)
+#
+#         falling = True
+#         my_block = test.BLOCK_ORDER[blocknum]
+#         while falling:
+#             print("Pre-push block mod: ", my_block % test.ROW_MOD)
+#             test.render(my_block + my_board)
+#             my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
+#         my_board = my_board + my_block
+#         test.render(my_board)
+#         print('Board height: ', my_board.bit_length() / 7)
+#
+# # ====Test Code====
+#
+# my_turn = Turn(27, 36, 3, test.STARTING_SIGNATURE, None)
+# other_turn = Turn(300, 36, 3, test.STARTING_SIGNATURE, None)
+# assert my_turn == other_turn
+# # print(my_turn)
+# i = 0
+# blocknum = instruction = 0
+# while i < 10 or blocknum != 0 or instruction != 0:
+#         instruction = next(test.INSTRUCTION_ITER)
+#         blocknum = next(test.BLOCK_ITER)
+#         if i % 10090 == 0:
+#             print(f"i: {i}, instruction {instruction}, block_number {blocknum}")
+#         i += 1
 
-        test.render(my_board)
-
-        falling = True
-        my_block = test.BLOCK_ORDER[blocknum]
-        while falling:
-            print("Pre-push block mod: ", my_block % test.ROW_MOD)
-            test.render(my_block + my_board)
-            my_block, falling = test.move_block(blocknum, my_block, direction, my_board)
-        my_board = my_board + my_block
-        test.render(my_board)
-        print('Board height: ', my_board.bit_length() / 7)
-
-# ====Test Code====
-
-my_turn = Turn(27, 36, 3, test.STARTING_SIGNATURE, None)
-other_turn = Turn(300, 36, 3, test.STARTING_SIGNATURE, None)
-assert my_turn == other_turn
-"Print: turn equality works"
-print(my_turn)
-"Print: Turn printing works"
+my_board = (test.STARTING_SIGNATURE << 56) + (test.STARTING_SIGNATURE << 49)
+for i in range(10):
+    my_board = test.take_turn(my_board)
+    test.render(my_board)
