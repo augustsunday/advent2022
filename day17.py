@@ -206,12 +206,12 @@ hare_height += adder
 turn = 0
 
 
-for i in range(2022):
+for i in range(1000000):
     if tortoise_board == hare_board:
         print("Board match at turn:", turn)
         print("Tortoise Height", tortoise_height)
         print("Height Differential", hare_height - tortoise_height)
-        break
+        print("Turn Differential", i)
     tortoise_board, height_adder = tortoise.take_turn(tortoise_board)
     tortoise_height += height_adder
 
@@ -223,7 +223,3 @@ for i in range(2022):
 
     turn += 1
 
-answer = (((1000000000000 - 34) / 35) * 53) + 60
-print(answer)
-tortoise.render(tortoise_board)
-# assert tortoise_height == 3068
