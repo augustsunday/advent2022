@@ -54,17 +54,8 @@ class Droplet:
         return surface_area
 
     def exterior_surface(self):
-        total_surface = self.surface_area()
-        water = self.flood_fill()
-        pocket = set()
-        for cube in self.drop_set:
-            x, y, z = cube
-            for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
-                if neighbor not in self.drop_set and neighbor not in water:
-                    total_surface -= 1
+        pass
 
-
-        return total_surface
 
 
 
