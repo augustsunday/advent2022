@@ -3,8 +3,6 @@
 # Date: 12/19/2022
 # Description:
 from collections import deque
-import itertools
-from math import sqrt
 
 
 class Droplet:
@@ -13,21 +11,70 @@ class Droplet:
         with open(filename, "r") as fo:
             coords = [(int(x), int(y), int(z)) for x, y, z in [triple.split(",") for triple in fo.read().split("\n")]]
 
-        max_x, max_y, max_z = float("-inf"), float("-inf"), float("-inf")
-        min_x, min_y, min_z = float("inf"), float("inf"), float("inf")
-
         for x, y, z in coords:
             self.drop_set.add((x, y, z))
-            max_x, max_y, max_z = max(max_x, x), max(max_y, y), max(max_z, z)
-            min_x, min_y, min_z = min(min_x, x), min(min_y, y), min(min_z, z)
 
-        self.max_x, self.max_y, self.max_z = x, y, z
-        print(self.drop_set)
-        print(min_x, min_y, min_z)
-        print(max_x, max_y, max_z)
+        self.upper_bound = 10
+        self.lower_bound = -10
 
-    def flood_fill(self, upper):
-        pass
+    def is_in_bounds(self, coord, lower_bound, upper_bound):
+        x, y, z = coord
+        return (lower_bound <= x <= upper_bound) and (lower_bound <= y <= upper_bound) and (lower_bound <= z <= upper_bound)
 
-    def surface_area(self, upper):
-        pass
+    def get_neighbors(self, coord):
+        x, y, z = coord
+        return []
+
+    def flood_fill(self):
+        start = (-1, -1, -1)
+        visited = set()
+        queue = deque()
+        queue.append(start)
+        visited.add(start)
+        while queue:
+            coord = queue.popleft()
+            x, y, z = coord
+            visited.add(coord)
+            for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
+                if neighbor not in visited and neighbor not in self.drop_set and self.is_in_bounds(neighbor, self.lower_bound, self.upper_bound):
+                    queue.append(neighbor)
+                    visited.add(neighbor)
+
+        return visited
+
+    def surface_area(self):
+        water = self.flood_fill()
+        surface_area = 0
+        for cube in self.drop_set:
+            x, y, z = cube
+            for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
+                if neighbor not in self.drop_set:
+                    surface_area += 1
+
+        return surface_area
+
+    def exterior_surface(self):
+        total_surface = self.surface_area()
+        water = self.flood_fill()
+        pocket = set()
+        for cube in self.drop_set:
+            x, y, z = cube
+            for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
+                if neighbor not in self.drop_set and neighbor not in water:
+                    total_surface -= 1
+
+
+        return total_surface
+
+
+
+
+
+lava = Droplet("test_input.txt")
+print(lava.surface_area())
+print(lava.exterior_surface())
+
+lava = Droplet("input.txt")
+print(lava.surface_area())
+print(lava.exterior_surface())
+
