@@ -26,10 +26,8 @@ class Droplet:
         print(min_x, min_y, min_z)
         print(max_x, max_y, max_z)
 
-    def is_in_bounds(self, coord, bound):
-        x, y, z = coord
-        return 0 <= x <= bound and 0 <= y <= bound and 0 <= z <= bound
+    def flood_fill(self, upper):
+        pass
 
-
-
-
+    def surface_area(self, upper):
+        pass
