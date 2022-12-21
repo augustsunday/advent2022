@@ -11,11 +11,16 @@ class Droplet:
         with open(filename, "r") as fo:
             coords = [(int(x), int(y), int(z)) for x, y, z in [triple.split(",") for triple in fo.read().split("\n")]]
 
+        self.upper_bound = 0
+        self.lower_bound = float("inf")
         for x, y, z in coords:
             self.drop_set.add((x, y, z))
-
-        self.upper_bound = 10
-        self.lower_bound = -10
+            for coord in [x, y, z]:
+                self.upper_bound = max(self.upper_bound, coord)
+                self.lower_bound = min(self.lower_bound, coord)
+        # Make room for steam to expand
+        self.upper_bound += 10
+        self.lower_bound -= 10
 
     def is_in_bounds(self, coord, lower_bound, upper_bound):
         x, y, z = coord
@@ -44,17 +49,25 @@ class Droplet:
 
     def surface_area(self):
         water = self.flood_fill()
-        surface_area = 0
+        area = 0
         for cube in self.drop_set:
             x, y, z = cube
             for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
                 if neighbor not in self.drop_set:
-                    surface_area += 1
+                    area += 1
 
-        return surface_area
+        return area
 
     def exterior_surface(self):
-        pass
+        water = self.flood_fill()
+        ext_area = 0
+        for cube in self.drop_set:
+            x, y, z = cube
+            for neighbor in [(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)]:
+                if neighbor in water:
+                    ext_area += 1
+
+        return ext_area
 
 
 
@@ -62,9 +75,11 @@ class Droplet:
 
 
 lava = Droplet("test_input.txt")
+print("Test Input: ")
 print(lava.surface_area())
 print(lava.exterior_surface())
 
+print("Prob1, 2: ")
 lava = Droplet("input.txt")
 print(lava.surface_area())
 print(lava.exterior_surface())
