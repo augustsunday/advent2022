@@ -57,6 +57,7 @@ class Solution:
             best_production = max(best_production, self.dfs(turn + 1, tmp_resource, tmp_bots))
 
 
+
         # Otherwise try scnearios producing each kind of bot, but only if we need more bots to meet our highest cost
         else:
             for idx, botcost in enumerate(self.current_blueprint):
